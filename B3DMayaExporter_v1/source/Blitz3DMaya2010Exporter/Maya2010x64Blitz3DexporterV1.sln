@@ -1,0 +1,35 @@
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Maya2010x64Blitz3DexporterV1", "Blitz3DexporterV1.vcxproj", "{CD98C426-EFEB-4097-9D98-78ED7868DAC6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|64bits = Debug|64bits
+		Debug|Win32 = Debug|Win32
+		Debug|x64 = Debug|x64
+		Release|64bits = Release|64bits
+		Release|Win32 = Release|Win32
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CD98C426-EFEB-4097-9D98-78ED7868DAC6}.Debug|64bits.ActiveCfg = Debug|Win32
+		{CD98C426-EFEB-4097-9D98-78ED7868DAC6}.Debug|64bits.Build.0 = Debug|Win32
+		{CD98C426-EFEB-4097-9D98-78ED7868DAC6}.Debug|Win32.ActiveCfg = Debug|Win32
+		{CD98C426-EFEB-4097-9D98-78ED7868DAC6}.Debug|Win32.Build.0 = Debug|Win32
+		{CD98C426-EFEB-4097-9D98-78ED7868DAC6}.Debug|x64.ActiveCfg = Debug|Win32
+		{CD98C426-EFEB-4097-9D98-78ED7868DAC6}.Debug|x64.Build.0 = Debug|Win32
+		{CD98C426-EFEB-4097-9D98-78ED7868DAC6}.Release|64bits.ActiveCfg = Release|x64
+		{CD98C426-EFEB-4097-9D98-78ED7868DAC6}.Release|64bits.Build.0 = Release|x64
+		{CD98C426-EFEB-4097-9D98-78ED7868DAC6}.Release|Win32.ActiveCfg = Release|x64
+		{CD98C426-EFEB-4097-9D98-78ED7868DAC6}.Release|Win32.Build.0 = Release|x64
+		{CD98C426-EFEB-4097-9D98-78ED7868DAC6}.Release|x64.ActiveCfg = Release|Win32
+		{CD98C426-EFEB-4097-9D98-78ED7868DAC6}.Release|x64.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(SubversionScc) = preSolution
+		Svn-Managed = True
+		Manager = AnkhSVN - Subversion Support for Visual Studio
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,477 @@
+// Copyright (C) 1997-2006 Autodesk, Inc., and/or its licensors.
+// All rights reserved.
+//
+// The coded instructions, statements, computer programs, and/or related
+// material (collectively the "Data") in these files contain unpublished
+// information proprietary to Autodesk, Inc. ("Autodesk") and/or its licensors,
+// which is protected by U.S. and Canadian federal copyright law and by
+// international treaties.
+//
+// The Data is provided for use exclusively by You. You have the right to use,
+// modify, and incorporate this Data into other products for purposes authorized 
+// by the Autodesk software license agreement, without fee.
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND. AUTODESK
+// DOES NOT MAKE AND HEREBY DISCLAIMS ANY EXPRESS OR IMPLIED WARRANTIES
+// INCLUDING, BUT NOT LIMITED TO, THE WARRANTIES OF NON-INFRINGEMENT,
+// MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE, OR ARISING FROM A COURSE 
+// OF DEALING, USAGE, OR TRADE PRACTICE. IN NO EVENT WILL AUTODESK AND/OR ITS
+// LICENSORS BE LIABLE FOR ANY LOST REVENUES, DATA, OR PROFITS, OR SPECIAL,
+// DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES, EVEN IF AUTODESK AND/OR ITS
+// LICENSORS HAS BEEN ADVISED OF THE POSSIBILITY OR PROBABILITY OF SUCH DAMAGES.
+
+//
+//  Alias Script File
+//
+//  Creation Date:	May 15, 1997
+//
+//  Procedure Name:
+//	AEfileTemplate
+//
+//  Description Name;
+//	Creates the attribute editor controls for the file Node
+//
+//  Input Value:
+//	nodeName 
+//
+//  Output Value:
+//	None
+// 
+
+
+//----------------------Ajout Blitz 3D Attributes Templates--------------
+
+
+
+proc createBlitzAttributes(string $nodeName ,string $blending ,string $flags){
+	// Extract the name of the node from the node.attribute name
+	//
+	string $tokenArray[];
+	tokenize($nodeName, ".", $tokenArray);
+
+	string $fileNode = $tokenArray[0];
+
+	
+ 
+  if ( !`attributeExists "FileBlend" $fileNode` ) addAttr -ln "FileBlend" -sn "B3DBl" -enumName "Disable texture=0:Alpha=1:Multiply=2:Add=3:Dot 3=4:Multiply 2=5" -at enum;
+  
+  if ( !`attributeExists "useColor" $fileNode` ) addAttr -ln "useColor" -sn "B3Dcol" -at "bool";
+  if ( !`attributeExists "Alpha" $fileNode` ) addAttr -ln "Alpha" -sn "B3DFAl" -at "bool";
+  if ( !`attributeExists "Masked" $fileNode` ) addAttr -ln "Masked" -sn "B3DMa" -at "bool";
+  if ( !`attributeExists "Mipmap" $fileNode` ) addAttr -ln "Mipmap" -sn "B3DMp" -at "bool";
+  if ( !`attributeExists "ClampU" $fileNode` ) addAttr -ln "ClampU" -sn "B3DCu" -at "bool";
+  if ( !`attributeExists "ClampV" $fileNode` ) addAttr -ln "ClampV" -sn "B3DCv" -at "bool";
+  if ( !`attributeExists "SphereEnv" $fileNode` ) addAttr -ln "SphereEnv" -sn "B3DSe" -at "bool";
+  if ( !`attributeExists "CubeMap" $fileNode` ) addAttr -ln "CubeMap" -sn "B3DCm" -at "bool";
+  if ( !`attributeExists "StoreVram" $fileNode` ) addAttr -ln "StoreVram" -sn "B3DSv" -at "bool";
+  if ( !`attributeExists "HiColor" $fileNode` ) addAttr -ln "HiColor" -sn "B3DHc" -at "bool";
+  
+  
+
+  
+  
+  }
+  
+  global proc UIBlitz3DFileBlendingOptionsNew(string $nodeName ,string $blending , string $flags)
+{
+//ajout des attributs Blitz3D si inesxistants
+createBlitzAttributes($nodeName ,$blending ,$flags);
+
+
+
+}
+
+global proc UIBlitz3DFileBlendingOptionsReplace(string $nodeName ,string $blending , string $flags)
+{
+//ajout des attributs Blitz3D si inesxistants
+createBlitzAttributes($nodeName ,$blending ,$flags);
+
+
+
+		
+
+
+
+//setUITemplate -ppt;
+
+}
+
+// fin ajout des options d'export pour Blitz3D
+
+
+
+global proc AEfileTextureNameChanged(
+	string $fileNode)
+{
+	//
+	// Description:
+	//	This procedure is called from AEassignTextureCB.
+	//	If the newly chosen file has an alpha channel, this procedure hooks up
+	//	the outTransparency attribute of the file node to the transparency
+	//	attribute of materials which are using this file for color, where
+	//	appropriate.
+	//
+
+	if (`getAttr ($fileNode + ".fileHasAlpha")` == 1)
+	{
+		//
+		// The newly chosen file has an alpha channel.
+		//
+
+		string $dstNodeArray[];
+		
+		$dstNodeArray = 
+			`listConnections 
+				-source false 
+				-destination true 
+				($fileNode + ".outColor")`;
+		
+		string $dstNode;
+		
+		for ($dstNode in $dstNodeArray)
+		{
+			if (	(isClassified($dstNode, "shader"))
+				&&	(size(`ls ($dstNode + ".transparency")`) != 0)
+				&&	(size(`ls ($dstNode + ".color")`) != 0)
+				&&	(`isConnected ($fileNode+".outColor") ($dstNode+".color")`)
+				&&	(size(`listConnections
+						-source true
+						-destination false
+						($dstNode + ".transparency")`) == 0))
+			{
+				// The dstNode is a material,
+				// and it has a transparency attribute,
+				// and it has a color attribute,
+				// and the file node outColor is connected to the material 
+				// color,
+				// and that transparency attribute is not currently the
+				// destination of any connection.
+				// We want to connect this file node's outTransparency to
+				// the dstNode's transparency.
+				//
+				connectAttr 
+					($fileNode + ".outTransparency") 
+					($dstNode + ".transparency");
+			}
+		}
+	}
+}
+
+//
+//  Procedure Name:
+//	AEassignTextureCB
+//
+
+global proc int AEassignTextureCB( string $fileAttribute,
+                                 string $filename,
+                                 string $fileType )
+{
+	//
+	// Description:
+	//	This procedure is called when the user changes the file texture name in
+	//	the edit box in the file texture attribute editor (whether by manually
+	//	typing it in, or by using the file browser to choose a new file).
+	//
+	//	This procedure updates the file texture node file name attribute and
+	//	calls AEfileTextureNameChanged to do some special case handling for 
+	//	files with alpha channels. 
+	//
+
+	setAttr $fileAttribute -type "string" $filename;
+
+	string $currentDir = `workspace -q -dir`;
+    retainWorkingDirectory ($currentDir);
+
+	// Extract the name of the node from the node.attribute name
+	//
+	string $tokenArray[];
+	tokenize($fileAttribute, ".", $tokenArray);
+
+	string $fileNode = $tokenArray[0];
+
+	AEfileTextureNameChanged($fileNode);
+
+	return true;
+}
+
+//
+//  Procedure Name:
+//	AEfileTextureBrowser
+//
+
+global proc AEfileTextureBrowser( string $cmd )
+{
+    string  $workspace = `workspace -q -fn`;
+    setWorkingDirectory $workspace "image" "sourceImages";
+	
+	fileBrowser ($cmd, "Open", "image", 0);
+}
+
+//
+//  Procedure Name:
+//	AEfileTextureNameNew 
+//
+
+global proc AEfileTextureNameNew (string $fileAttribute)
+{
+	setUITemplate -pst attributeEditorTemplate;
+	rowLayout -nc 3 textureNameLayout;
+		text -label (uiRes("m_AEfileTemplate.kImageName"));
+		textField textureNameField;
+			symbolButton -image "navButtonBrowse.xpm" browser;
+	setParent ..;
+	setUITemplate -ppt;
+	
+    AEfileTextureNameReplace $fileAttribute;
+}
+
+//
+//  Procedure Name:
+//	AEfileTextureNameReplace
+//
+
+global proc AEfileTextureNameReplace (string $fileAttribute)
+{
+	connectControl -fileName textureNameField $fileAttribute;
+
+    string $command = "AEassignTextureCB "+" "+$fileAttribute;
+
+    button -e -c
+		("AEfileTextureBrowser \"" + $command + "\"" ) browser;
+}
+
+global proc checkUseHardwareTextureCycling ( string $nodeName ) 
+{
+	string $nodeAttr = $nodeName + ".useHardwareTextureCycling";
+	int $value = `getAttr $nodeAttr`;
+	
+	if ( $value == 1 ) {
+		editorTemplate -dimControl $nodeName "startCycleExtension" false;
+		editorTemplate -dimControl $nodeName "endCycleExtension" false;
+		editorTemplate -dimControl $nodeName "byCycleIncrement" false;
+	} else {
+		editorTemplate -dimControl $nodeName "startCycleExtension" true;
+		editorTemplate -dimControl $nodeName "endCycleExtension" true;
+		editorTemplate -dimControl $nodeName "byCycleIncrement" true;
+	}
+}
+
+//
+//  Procedure Name:
+//  checkFilterType
+//
+
+global proc checkFilterType ( string $nodeName )
+{
+	string $nodeAttr = $nodeName + ".filterType";
+	int $filter = `getAttr $nodeAttr`;
+	if ($filter == 0) {
+		editorTemplate -dimControl $nodeName "filter" true;
+		editorTemplate -dimControl $nodeName "filterOffset" true;
+	} else {
+		editorTemplate -dimControl $nodeName "filter" false;
+		editorTemplate -dimControl $nodeName "filterOffset" false;
+	}
+
+	// if ($filter == 1)
+	//	editorTemplate -dimControl $nodeName "useMaximumRes" false;
+	// else
+	//	editorTemplate -dimControl $nodeName "useMaximumRes" true;
+}
+
+
+//
+// File Texture Reload functions
+//
+
+global proc AEfileTextureReload (string $ftn)
+{
+	setUITemplate -pst attributeEditorTemplate;
+	rowLayout -nc 5  -cl5  "center" "center" "center" "center" "center";
+		text -label "";
+		button -label (uiRes("m_AEfileTemplate.kReload"))
+			   -c ("AEfileTextureReloadCmd " + $ftn) fileReloadBtn;
+		button -label (uiRes("m_AEfileTemplate.kEdit")) 
+			   -c ("AEfileTextureEditCmd " + $ftn) fileEditBtn;
+		button -label (uiRes("m_AEfileTemplate.kView")) 
+			   -c ("AEfileTextureViewCmd " + $ftn) fileViewBtn;
+		text -label "";
+		setParent ..;
+	setUITemplate -ppt;	
+}
+
+global proc AEfileTextureReloadReplace (string $ftn)
+{
+	button -e -c ("AEfileTextureReloadCmd " + $ftn) fileReloadBtn;
+	button -e -c ("AEfileTextureEditCmd " + $ftn) fileEditBtn;
+	button -e -c ("AEfileTextureViewCmd " + $ftn) fileViewBtn;
+}
+
+global proc AEfileTextureReloadCmd (string $ftn)
+{
+    string $currFile = `getAttr $ftn`;
+	if ($currFile != "") {
+		int $i;
+		string $allTextures[] = `ls -typ file -type mentalrayTexture`;
+
+		// this loop is needed to guarantee all texture nodes who
+		// reference this file gets updated.
+		for ($i = 0; $i < size($allTextures); $i++) {
+			string $ithFile = `getAttr ($allTextures[$i] + ".ftn")`;
+			if ($ithFile == $currFile)
+				setAttr ($allTextures[$i] + ".ftn") -type "string" $currFile;
+		}
+	}
+}
+
+global proc AEfileTextureEditCmd (string $ftn)
+{
+    string $currFile = `getAttr $ftn`;
+	if ($currFile != "") {
+		if (`about -linux`) {
+			int $sequence  = 0;	// 0 -> single image
+			int $editImage = 1;
+			launchImageApp($currFile, $sequence, $editImage);
+		}
+		else {
+			launchImageEditor -eif $currFile;
+		}
+	}
+}
+
+global proc AEfileTextureViewCmd (string $ftn)
+{
+    string $currFile = `getAttr $ftn`;
+	if ($currFile != "") {
+		if (`about -linux`) {
+			int $sequence  = 0;	// 0 -> single image
+			int $editImage = 0;	// 0 -> view image
+			launchImageApp($currFile, $sequence, $editImage);
+		}
+		else {
+			launchImageEditor -vif $currFile;
+		}
+	}
+}
+
+//
+//	Prefilter settings
+//
+global proc checkPreFilter ( string $nodeName )
+{
+    string $nodeAttr = $nodeName + ".preFilter";
+    int $value = `getAttr $nodeAttr`;
+
+    if ( $value == 1 ) {
+        editorTemplate -dimControl $nodeName "preFilterRadius" false;
+    } else {
+        editorTemplate -dimControl $nodeName "preFilterRadius" true;
+    }
+}
+
+global proc checkHDRMapping( string $nodeName )
+{
+    string $nodeAttr = $nodeName + ".hdrMapping";
+    int $value = `getAttr $nodeAttr`;
+    
+    // 2 == exponential, so enable exponential exposure parameter
+    if ( $value == 2 )
+    {
+        editorTemplate -dimControl $nodeName "hdrExposure" false;
+    }
+    else
+    {
+        editorTemplate -dimControl $nodeName "hdrExposure" true;
+    }  
+}
+
+//
+//  Procedure Name:
+//	AEfileTemplate
+//
+
+global proc AEfileTemplate ( string $nodeName )
+{
+	AEswatchDisplay $nodeName;
+	editorTemplate -beginScrollLayout;
+		editorTemplate -beginLayout (uiRes("m_AEfileTemplate.kFileAttributes")) -collapse 0;
+			editorTemplate -addControl "filterType" "checkFilterType";
+			editorTemplate -addControl "preFilter" "checkPreFilter";
+			editorTemplate -addControl "preFilterRadius";
+			editorTemplate -addSeparator;
+
+			editorTemplate -callCustom "AEfileTextureNameNew" 
+						"AEfileTextureNameReplace" 
+						"fileTextureName";
+			editorTemplate -callCustom "AEfileTextureReload"
+						"AEfileTextureReloadReplace"
+						"fileTextureName";
+			editorTemplate -addSeparator;
+			
+			editorTemplate -suppress "filterWidth";
+			editorTemplate -beginNoOptimize;
+			editorTemplate -suppress "useMaximumRes";
+			editorTemplate -label (uiRes("m_AEfileTemplate.kUseBOT")) -addControl "useCache";
+			editorTemplate -addControl "disableFileLoad";
+			editorTemplate -label (uiRes("m_AEfileTemplate.kUseImageSequence")) -addControl "useFrameExtension" "checkUseFrameExtension";
+			editorTemplate -endNoOptimize;
+			editorTemplate -label (uiRes("m_AEfileTemplate.kImageNumber")) -addControl "frameExtension";
+			editorTemplate -addControl "frameOffset";
+//			editorTemplate -label "Missing frames" -addControl "framesMissing";
+		editorTemplate -endLayout;
+		
+		//---------------Blitz3D Export Attributes Add---------------------
+
+
+		editorTemplate -beginLayout "Blitz3DExport Options" -collapse 0;
+			
+			editorTemplate -callCustom "UIBlitz3DFileBlendingOptionsNew" "UIBlitz3DFileBlendingOptionsReplace" $nodeName "Blitz3Dblending" "Blitz3Dflags";
+
+      
+  editorTemplate -addControl "FileBlend";
+  
+ 
+  
+editorTemplate -addControl "useColor";
+editorTemplate -addControl "Alpha";
+editorTemplate -addControl "Masked";
+editorTemplate -addControl "Mipmap";
+editorTemplate -addControl "ClampU";
+editorTemplate -addControl "ClampV";
+editorTemplate -addControl "SphereEnv";
+ editorTemplate -addControl "CubeMap";
+ editorTemplate -addControl "StoreVram";
+ editorTemplate -addControl "HiColor";
+
+  
+		
+    editorTemplate -endLayout;
+		
+//-------------------end of Blitz 3D export options-------------------
+
+
+
+		editorTemplate -beginLayout (uiRes("m_AEfileTemplate.kInteractiveSequenceCachingOptions"));
+			editorTemplate -label (uiRes("m_AEfileTemplate.kUseInteractiveSequenceCaching")) -addControl "useHardwareTextureCycling"
+						"checkUseHardwareTextureCycling";
+			editorTemplate -label (uiRes("m_AEfileTemplate.kSequenceStart")) -addControl "startCycleExtension";
+			editorTemplate -label (uiRes("m_AEfileTemplate.kSequenceEnd")) -addControl "endCycleExtension";
+			editorTemplate -label (uiRes("m_AEfileTemplate.kSequenceIncrement")) -addControl "byCycleIncrement";
+		editorTemplate -endLayout;
+   	
+		editorTemplate -beginLayout (uiRes("m_AEfileTemplate.kHighDynamicRangeImage"));
+			editorTemplate -label (uiRes("m_AEfileTemplate.kFloatToFixedPoint")) -addControl "hdrMapping" "checkHDRMapping";
+			editorTemplate -label (uiRes("m_AEfileTemplate.kExposure")) -addControl "hdrExposure";
+		editorTemplate -endLayout;		
+
+		// suppressed attributes
+		editorTemplate -suppress "fileTextureName";
+		editorTemplate -suppress "noiseUV";
+		editorTemplate -suppress "blendForInteractive";
+		
+
+		// include/call base class/node attributes
+		AEtexture2dCommon $nodeName;
+
+	editorTemplate -addExtraControls;
+	editorTemplate -endScrollLayout;
+}

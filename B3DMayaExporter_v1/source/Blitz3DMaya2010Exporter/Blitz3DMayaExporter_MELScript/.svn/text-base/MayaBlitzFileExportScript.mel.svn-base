@@ -1,0 +1,167 @@
+
+
+
+global proc int MayaBlitzFileExportScript ( string $parent,
+								   string $action,
+								   string $initialSettings,
+								   string $resultCallback )
+//
+//	Description:
+//		This script posts the OBJ file translator options.
+//		The optionsString is of the form:
+//			varName1=value1;varName2=value2;...
+//
+//	Parameters:
+//		$parent - the elf parent layout for this options layout. It is
+//					always a scrollLayout.
+//		$action - the action that is to be performed with this invokation
+//					of this proc. Valid options are:
+//						"query" - construct the options string and pass it
+//									to the resultCallback.
+//						"post" - post all the elf controls.
+//		$initialSettings - the current options string in effect at the
+//						   time this script is invoked.
+//		$resultCallback -
+//				This is the proc to be called with the result string. 
+//				resultCallback ( string $optionsString )
+//
+//	Returns:
+//		1 if successfull.
+//		0 otherwise.
+//
+{
+	int		$bResult;
+	string	$currentOptions;
+	string	$optionList[];
+	string	$optionBreakDown[];
+	int		$index;
+
+	if ($action == "post") {
+		setParent $parent;
+
+		columnLayout -adj true objTypeCol;
+			radioButtonGrp
+				-l "Vertex Color"
+				-nrb 2 -cw3 175 75 75
+				-la2 "On" "Off" objGroups;
+		//	radioButtonGrp
+		//		-l "Point groups"
+		//		-nrb 2	-cw3 175 75 75
+		//		-la2 "On" "Off" objPtGroups;
+		//	radioButtonGrp
+		//		-l "Materials"
+		//		-nrb 2	-cw3 175 75 75
+		//		-la2 "On" "Off" objMaterials;
+		//	radioButtonGrp
+		//		-l "Smoothing"
+		//		-nrb 2	-cw3 175 75 75
+		//		-la2 "On" "Off" objSmoothing;
+			radioButtonGrp
+				-l "Normals"
+				-nrb 2	-cw3 175 75 75
+				-la2 "On" "Off" objNormals;
+            			radioButtonGrp
+				-l "Brush FX"
+				-nrb 2	-cw3 175 75 75
+				-la2 "brush default" "use Vx Color" brushFX;
+                
+                				
+		// Now set to current settings.
+		$currentOptions = $initialSettings;
+		if (size($currentOptions) > 0) 
+			{
+				tokenize($currentOptions, "-", $optionList);
+				for ($index = 0; $index < size($optionList); $index++) 
+					{
+						tokenize($optionList[$index], "=", $optionBreakDown);
+
+						if ($optionBreakDown[0] == "Vertex Color") 
+							{
+								if ($optionBreakDown[1] == "0") 
+									{
+										radioButtonGrp -e -sl 2 objGroups;
+									} //fin if
+								else 
+									{
+										radioButtonGrp -e -sl 1 objGroups;
+									}//fin else
+							} 
+						else  
+				
+						if ($optionBreakDown[0] == "normals") 
+							{
+								if ($optionBreakDown[1] == "0") 
+									{
+										radioButtonGrp -e -sl 2 objNormals;
+									} //fin if
+								else 
+									{
+										radioButtonGrp -e -sl 1 objNormals;
+									} // fin else
+				
+							} //fin if 
+						else
+						
+						if ($optionBreakDown[0] == "brushFX") 
+							{
+								if ($optionBreakDown[1] == "0") 
+									{
+										radioButtonGrp -e -sl 2 brushFX;
+									} //fin if
+								else 
+									{
+										radioButtonGrp -e -sl 1 brushFX;
+									} // fin else
+				
+							} //fin if 
+					}	// fin for				
+			}// fin if
+		$result = 1;
+	
+	} 
+	else 
+	if ($action == "query") 
+	{
+
+		if (`radioButtonGrp -q -sl objGroups` == 1) 
+		{
+			$currentOptions = $currentOptions + " vertexcolorFlag 1";
+		}//fin if 
+		else 
+		{
+			$currentOptions = $currentOptions + " vertexcolorFlag 0";
+		}// fin else 
+
+
+
+
+		if (`radioButtonGrp -q -sl objNormals` == 1) 
+			{
+				$currentOptions = $currentOptions + " vertexnormalFlag 1";
+			}//fin if 
+			else 
+			{
+				$currentOptions = $currentOptions + " vertexnormalFlag 0";
+			}// fin else
+		
+		
+		
+		if (`radioButtonGrp -q -sl brushFX` == 1) 
+			{
+				$currentOptions = $currentOptions + " brushFX 1";
+			}//fin if 
+			else 
+			{
+				$currentOptions = $currentOptions + " brushFX 0";
+			}// fin else
+
+		eval($resultCallback+" \""+$currentOptions+"\"");
+		$result = 1;
+	} // fin if query 
+	else 
+	{
+		$bResult = 0;
+	} // fin else
+	
+	return $bResult;
+}// Fin Proc

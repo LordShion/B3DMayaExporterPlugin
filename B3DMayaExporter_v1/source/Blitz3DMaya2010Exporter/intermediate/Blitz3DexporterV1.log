@@ -1,0 +1,40 @@
+﻿Build started 04/03/2010 22:18:39.
+     1>Project "G:\Projets\coding\svn_working_copies\Blitz3DMaya2010Exporter\Blitz3DexporterV1.vcxproj" on node 2 (rebuild target(s)).
+     1>_PrepareForClean:
+         Deleting file ".\intermediate\Maya2010x64Blitz3DexporterV1.lastbuildstate".
+     1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\Microsoft.CppBuild.targets(298,5): warning MSB8004: Output Directory does not end with a trailing slash.  This build instance will add the slash as it is required to allow proper evaluation of the Output Directory.
+       InitializeBuildStatus:
+         Touching ".\intermediate\Maya2010x64Blitz3DexporterV1.unsuccessfulbuild".
+       ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I"C:\Program Files\Autodesk\Maya2010\include" /Zi /nologo /W3 /WX- /O2 /Oy- /D WIN32 /D NDEBUG /D _WINDOWS /D _AFXDLL /D _MBCS /D NT_PLUGIN /D REQUIRE_IOSTREAM /D _VC80_UPGRADE=0x0710 /D _WINDLL /Gm- /EHsc /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo".\intermediate\\" /Fd".\intermediate\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt pluginMain.cpp /GX /I "." /YX /c 
+     1>cl : Command line warning D9035: option 'GX' has been deprecated and will be removed in a future release
+     1>cl : Command line warning D9036: use 'EHsc' instead of 'GX'
+     1>cl : Command line warning D9002: ignoring unknown option '/YX'
+         pluginMain.cpp
+     1>g:\projets\coding\svn_working_copies\blitz3dmaya2010exporter\getrelativepath.h(129): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\string.h(105) : see declaration of 'strcpy'
+     1>G:\Projets\coding\svn_working_copies\Blitz3DMaya2010Exporter\Blitz3Dexporteur.h(159): warning C4244: 'initializing' : conversion from 'std::streamoff' to 'int', possible loss of data
+     1>G:\Projets\coding\svn_working_copies\Blitz3DMaya2010Exporter\Blitz3Dexporteur.h(158): warning C4101: 'tempo' : unreferenced local variable
+     1>G:\Projets\coding\svn_working_copies\Blitz3DMaya2010Exporter\Blitz3Dexporteur.h(192): warning C4244: 'initializing' : conversion from 'std::streamoff' to 'int', possible loss of data
+     1>G:\Projets\coding\svn_working_copies\Blitz3DMaya2010Exporter\Blitz3Dexporteur.h(234): warning C4101: 'vm' : unreferenced local variable
+     1>G:\Projets\coding\svn_working_copies\Blitz3DMaya2010Exporter\pluginFunctions.h(1094): warning C4244: 'initializing' : conversion from 'double' to 'int', possible loss of data
+     1>G:\Projets\coding\svn_working_copies\Blitz3DMaya2010Exporter\pluginFunctions.h(1139): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
+     1>G:\Projets\coding\svn_working_copies\Blitz3DMaya2010Exporter\pluginFunctions.h(1172): warning C4101: 'infCount' : unreferenced local variable
+     1>G:\Projets\coding\svn_working_copies\Blitz3DMaya2010Exporter\pluginFunctions.h(1217): warning C4018: '<' : signed/unsigned mismatch
+     1>G:\Projets\coding\svn_working_copies\Blitz3DMaya2010Exporter\pluginFunctions.h(1269): warning C4018: '<' : signed/unsigned mismatch
+     1>G:\Projets\coding\svn_working_copies\Blitz3DMaya2010Exporter\pluginFunctions.h(1408): warning C4018: '<' : signed/unsigned mismatch
+     1>G:\Projets\coding\svn_working_copies\Blitz3DMaya2010Exporter\pluginFunctions.h(1371): warning C4101: 'Scale' : unreferenced local variable
+     1>pluginMain.cpp(1004): warning C4244: 'argument' : conversion from 'double' to 'int', possible loss of data
+     1>pluginMain.cpp(1014): warning C4244: 'argument' : conversion from 'double' to 'float', possible loss of data
+     1>g:\projets\coding\svn_working_copies\blitz3dmaya2010exporter\pluginfunctions.h(1240): warning C4715: 'AnimCurveFromAttr' : not all control paths return a value
+     1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\Microsoft.CppBuild.targets(989,5): warning MSB8012: TargetPath(C:\Program Files\Autodesk\Maya2010\bin\plug-ins\Maya2010x64Blitz3DexporterV1.dll) does not match the Linker's OutputFile property value (C:\Program Files\Autodesk\Maya2010\bin\plug-ins\Blitz3DexporterV1.mll). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Link.OutputFile).
+     1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\Microsoft.CppBuild.targets(990,5): warning MSB8012: TargetExt(.dll) does not match the Linker's OutputFile property value (.mll). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Link.OutputFile).
+     1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\Microsoft.CppBuild.targets(991,5): warning MSB8012: TargetName(Maya2010x64Blitz3DexporterV1) does not match the Linker's OutputFile property value (Blitz3DexporterV1). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Link.OutputFile).
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Program Files\Autodesk\Maya2010\bin\plug-ins\Blitz3DexporterV1.mll" /NOLOGO /LIBPATH:"C:\Program Files\Autodesk\Maya2010\lib" Foundation.lib OpenMaya.lib OpenMayaAnim.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:".\intermediate\Maya2010x64Blitz3DexporterV1.dll.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /PDB:"Release/Blitz3DexporterV1.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"Release/Blitz3DexporterV1.lib" /MACHINE:X86 /DLL .\intermediate\pluginMain.obj /subsystem:windows /incremental:no /machine:I386 /export:initializePlugin /export:uninitializePlugin 
+     1>Foundation.lib(FOUNDATION.dll) : fatal error LNK1112: module machine type 'x64' conflicts with target machine type 'X86'
+     1>Done Building Project "G:\Projets\coding\svn_working_copies\Blitz3DMaya2010Exporter\Blitz3DexporterV1.vcxproj" (rebuild target(s)) -- FAILED.
+
+Build FAILED.
+
+Time Elapsed 00:00:06.30

@@ -1,0 +1,150 @@
+
+
+
+global proc int MayaBlitzFileExportScript ( string $parent,
+								   string $action,
+								   string $initialSettings,
+								   string $resultCallback )
+//
+//	Description:
+//		This script posts the OBJ file translator options.
+//		The optionsString is of the form:
+//			varName1=value1;varName2=value2;...
+//
+//	Parameters:
+//		$parent - the elf parent layout for this options layout. It is
+//					always a scrollLayout.
+//		$action - the action that is to be performed with this invokation
+//					of this proc. Valid options are:
+//						"query" - construct the options string and pass it
+//									to the resultCallback.
+//						"post" - post all the elf controls.
+//		$initialSettings - the current options string in effect at the
+//						   time this script is invoked.
+//		$resultCallback -
+//				This is the proc to be called with the result string. 
+//				resultCallback ( string $optionsString )
+//
+//	Returns:
+//		1 if successfull.
+//		0 otherwise.
+//
+{
+
+
+	int		$bResult;
+	string	$currentOptions;
+	string	$optionList[];
+	string	$optionBreakDown[];
+	int		$index;
+
+	if ($action == "post") {
+		setParent $parent;
+		columnLayout;
+		checkBox -h 15 -l "Export Brushes" ck1;
+		checkBox -h 15 -l "Export Textures" ck2;
+		checkBox -h 15 -l "Export Normals" ck3;
+		checkBox -h 15 -l "Export & Use Vertex Colors" ck4;
+		checkBox -h 15 -l "Export Hierarchy" ck5;
+		checkBox -h 15 -l "Use Relative Path" ck6;
+		checkBox -h 15 -l "Use Brush Default" ck7;
+		checkBox -h 15 -l "Use Root Node" ck8;
+		checkBox -h 15 -l "Export Animation" ck9;
+
+		$result = 1;
+	
+	} 
+	else 
+	if ($action == "query") 
+	{
+	//export brushes
+		if (`checkBox -q -v ck1` == 1) 
+		{
+			$currentOptions = $currentOptions + " exportbrushes 1";
+		}
+		else 
+		{
+			$currentOptions = $currentOptions + " exportbrushes 0";
+		}// fin if 
+
+	//export textures
+		if (`checkBox -q -v ck2` == 1) 		{
+			$currentOptions = $currentOptions + " exporttextures 1";
+		}
+		else 
+		{
+			$currentOptions = $currentOptions + " exporttextures 0";
+		}// fin if 
+			//export normals
+		if (`checkBox -q -v ck3` == 1)		{
+			$currentOptions = $currentOptions + " vertexnormalFlag 1";
+		}
+		else 
+		{
+			$currentOptions = $currentOptions + " vertexnormalFlag 0";
+		}// fin if 
+			//export & use vertex color
+		if (`checkBox -q -v ck4` == 1) 		{
+			$currentOptions = $currentOptions + " vertexcolorFlag 1";
+		}
+		else 
+		{
+			$currentOptions = $currentOptions + " vertexcolorFlag 0";
+		}// fin if 
+			//export Hierarchy
+		if (`checkBox -q -v ck5` == 1) 		{
+			$currentOptions = $currentOptions + " exportHierarchy 1";
+		}
+		else 
+		{
+			$currentOptions = $currentOptions + " exportHierarchy 0";
+		}// fin if 
+			//Use Relative Path
+		if (`checkBox -q -v ck6` == 1) 		{
+			$currentOptions = $currentOptions + " UseRelativePath 1";
+		}
+		else 
+		{
+			$currentOptions = $currentOptions + " UseRelativePath 0";
+		}// fin if 
+		
+					//Use Brush Default
+		if (`checkBox -q -v ck7` == 1) 		{
+			$currentOptions = $currentOptions + " brushFX 1";
+		}
+		else 
+		{
+			$currentOptions = $currentOptions + " brushFX 0";
+		}// fin if 
+		
+							//Use Scene Root
+		if (`checkBox -q -v ck8` == 1) 		{
+			$currentOptions = $currentOptions + " UseRoot 1";
+		}
+		else 
+		{
+			$currentOptions = $currentOptions + " UseRoot 0";
+		}// fin if 
+		
+									//Export Animation
+		if (`checkBox -q -v ck9` == 1) 		{
+			$currentOptions = $currentOptions + " exportAnim 1";
+		}
+		else 
+		{
+			$currentOptions = $currentOptions + " exportAnim 0";
+		}// fin if 
+		
+		
+
+		eval($resultCallback+" \""+$currentOptions+"\"");
+		$result = 1;
+	} // fin if query 
+	else 
+	{
+		$bResult = 0;
+	} // fin else
+	
+	return $bResult;
+}// Fin Proc
+

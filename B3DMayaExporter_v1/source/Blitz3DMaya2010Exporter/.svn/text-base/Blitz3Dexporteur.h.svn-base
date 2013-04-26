@@ -1,0 +1,38 @@
+#include <maya/MPxFileTranslator.h>
+#include <maya/MStringArray.h>
+
+	// our plugin file translator class. This must inherit
+	// from the base class MPxFileTranslator
+class MayaFileTranslator : public MPxFileTranslator	{
+		public:
+  	
+
+		MayaFileTranslator() : MPxFileTranslator() {};
+		~MayaFileTranslator() {};
+	// we overload this method to perform any
+	// file export operations needed
+		MStatus writer( 	const MFileObject& file,
+		const MString& optionsString,
+		FileAccessMode mode);
+
+
+	// returns true if this class can export files
+		bool haveWriteMethod() const {
+  		return true;
+
+		}
+	// returns the default extension of the file supported
+	// by this FileTranslator.
+		MString defaultExtension() const {
+  			return "b3d";
+
+		}
+	// Used by Maya to create a new instance of our
+	// custom file translator
+		static void* creator(){
+  			return new MayaFileTranslator;
+
+		}
+
+
+};

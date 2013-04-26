@@ -1,0 +1,175 @@
+// Copyright (C) 1997-2006 Autodesk, Inc., and/or its licensors.
+// All rights reserved.
+//
+// The coded instructions, statements, computer programs, and/or related
+// material (collectively the "Data") in these files contain unpublished
+// information proprietary to Autodesk, Inc. ("Autodesk") and/or its licensors,
+// which is protected by U.S. and Canadian federal copyright law and by
+// international treaties.
+//
+// The Data is provided for use exclusively by You. You have the right to use,
+// modify, and incorporate this Data into other products for purposes authorized 
+// by the Autodesk software license agreement, without fee.
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND. AUTODESK
+// DOES NOT MAKE AND HEREBY DISCLAIMS ANY EXPRESS OR IMPLIED WARRANTIES
+// INCLUDING, BUT NOT LIMITED TO, THE WARRANTIES OF NON-INFRINGEMENT,
+// MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE, OR ARISING FROM A COURSE 
+// OF DEALING, USAGE, OR TRADE PRACTICE. IN NO EVENT WILL AUTODESK AND/OR ITS
+// LICENSORS BE LIABLE FOR ANY LOST REVENUES, DATA, OR PROFITS, OR SPECIAL,
+// DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES, EVEN IF AUTODESK AND/OR ITS
+// LICENSORS HAS BEEN ADVISED OF THE POSSIBILITY OR PROBABILITY OF SUCH DAMAGES.
+
+//
+//  Alias Script File
+//
+//  Creation Date:	May 16, 1997
+//
+//  Procedure Name:
+//	AElambertCommon
+//
+//  Description Name;
+//	Creates attribute editor controls in separate files
+//	for the lambert Node
+//
+//  Input Value:
+//	nodeName 
+//
+//  Output Value:
+//	None
+// 
+
+
+
+//----------------------Ajout Blitz 3D Attributes Templates--------------
+
+
+
+proc createBlitzAttributes(string $nodeName ,string $blending ,string $flags){
+	// Extract the name of the node from the node.attribute name
+	//
+	string $tokenArray[];
+	tokenize($nodeName, ".", $tokenArray);
+
+	string $fileNode = $tokenArray[0];
+	 
+	 if ( !`attributeExists "BrushShininess" $fileNode` ) addAttr -ln "BrushShininess" -sn "B3DFl" -minValue 0 -maxValue 1 -at "float";
+  if ( !`attributeExists "BrushAlpha" $fileNode` ) addAttr -ln "BrushAlpha" -sn "B3DAl" -minValue 0 -maxValue 1 -at "float";
+  
+  if ( !`attributeExists "BrushBlending" $fileNode` ) addAttr -ln "BrushBlending" -sn "B3DBle" -enumName "Alpha=1:Multiply=2:Add=3" -at enum;
+  
+  if ( !`attributeExists "FullBright" $fileNode` ) addAttr -ln "FullBright" -sn "B3DFu" -at "bool";
+  if ( !`attributeExists "TwoSided" $fileNode` ) addAttr -ln "TwoSided" -sn "B3D2S" -at "bool";
+  if ( !`attributeExists "FlatShaded" $fileNode` ) addAttr -ln "FlatShaded" -sn "B3DFS" -at "bool";
+  if ( !`attributeExists "DisableFog" $fileNode` ) addAttr -ln "DisableFog" -sn "B3DDF" -at "bool";
+  if ( !`attributeExists "VertexColors" $fileNode` ) addAttr -ln "VertexColors" -sn "B3DVC" -at "bool";
+  if ( !`attributeExists "VertexAlpha" $fileNode` ) addAttr -ln "VertexAlpha" -sn "B3DVA" -at "bool";
+  
+
+  
+  
+  }
+  
+  global proc UIBlitz3DShaderBlendingOptionsNew(string $nodeName ,string $blending , string $flags)
+{
+//ajout des attributs Blitz3D si inesxistants
+createBlitzAttributes($nodeName ,$blending ,$flags);
+
+
+
+}
+
+global proc UIBlitz3DShaderBlendingOptionsReplace(string $nodeName ,string $blending , string $flags)
+{
+//ajout des attributs Blitz3D si inesxistants
+createBlitzAttributes($nodeName ,$blending ,$flags);
+
+
+
+		
+
+
+
+//setUITemplate -ppt;
+
+}
+
+// fin ajout des options d'export de Blitz3D
+
+//
+//  Procedure Name:
+//	 AEshaderBumpNew
+//
+
+global proc AEshaderBumpNew (string $attrName)
+{
+	setUITemplate -pst attributeEditorTemplate;
+
+	attrNavigationControlGrp 
+		-label (uiRes("m_AElambertCommon.kBumpMapping"))
+		-at $attrName
+		bumpControl;
+
+	setUITemplate -ppt;
+}
+
+
+//
+//  Procedure Name:
+//	AEshaderBumpReplace
+//
+
+global proc AEshaderBumpReplace (string $attrName)
+{
+	attrNavigationControlGrp -edit
+		-at $attrName
+		bumpControl;
+}
+
+//
+//  Procedure Name:
+//	AElambertCommon
+//
+
+global proc AElambertCommon ( string $nodeName )
+{
+	editorTemplate -callCustom AEshaderTypeNew AEshaderTypeReplace "message";
+
+	editorTemplate -beginLayout (uiRes("m_AElambertCommon.kCommonMaterialAttr")) -collapse 0;
+		editorTemplate -addControl "color";
+		editorTemplate -addControl "transparency";
+		editorTemplate -addControl "ambientColor";
+		editorTemplate -addControl "incandescence";
+		editorTemplate -callCustom "AEshaderBumpNew" "AEshaderBumpReplace"
+			 		"normalCamera";
+		editorTemplate -addControl "diffuse";
+		editorTemplate -addControl "translucence";
+		editorTemplate -addControl "translucenceDepth";
+		editorTemplate -addControl "translucenceFocus";
+	editorTemplate -endLayout;
+	
+		//---------------Blitz3D Export Attributes Add---------------------
+
+
+		editorTemplate -beginLayout "Blitz3DExport Options" -collapse 0;
+			
+			editorTemplate -callCustom "UIBlitz3DShaderBlendingOptionsNew" "UIBlitz3DShaderBlendingOptionsReplace" $nodeName "Blitz3Dblending" "Blitz3Dflags";
+
+  editorTemplate -addControl "BrushShininess";
+    editorTemplate -addControl "BrushAlpha";
+      
+  editorTemplate -addControl "BrushBlending";
+  
+  editorTemplate -addControl "FullBright";
+  editorTemplate -addControl "TwoSided";
+  editorTemplate -addControl "FlatShaded";
+  editorTemplate -addControl "DisableFog";
+  editorTemplate -addControl "VertexColors";
+  editorTemplate -addControl "VertexAlpha";
+  
+		
+    editorTemplate -endLayout;
+		
+//-------------------end of Blitz 3D export options-------------------
+
+
+}
